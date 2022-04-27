@@ -1,2 +1,4 @@
 # WeatherApp
-Simple weather with an ability to load forecast from OpenWeatherMap.
+## Simple weather app with two main abilities:
+- [ ] Load *weather forecast* for *selected city* by using **OpenWeatherMap API**.
+- [ ] Load *random image* from **random.cat** website.

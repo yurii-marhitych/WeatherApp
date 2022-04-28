@@ -5,11 +5,13 @@
 //  Created by Yurii Marhitych on 28.04.2022.
 //
 
+import UIKit
+
 struct WeatherForecastTableViewCellViewModel {
     
     // MARK: - Properties
-    let todayForecast: TodayForecast
-    let city: String
+    private let todayForecast: TodayForecast
+    private let city: String
     
     var cityName: String {
         return city.capitalized
@@ -31,8 +33,9 @@ struct WeatherForecastTableViewCellViewModel {
         return todayForecast.condition.subtitle
     }
     
-    // MARK: - Helper Methods
-    private func format(temperature: Double) -> String {
-        return String(format: "%.1f°", temperature)
+    // MARK: - Init
+    init(forecast: TodayForecast, city: String) {
+        self.todayForecast = forecast
+        self.city = city
     }
 }

@@ -17,6 +17,7 @@ class WeatherViewController: UIViewController {
     
     // MARK: - Outlets
     @IBOutlet weak var forecastTableView: UITableView!
+    @IBOutlet weak var randomCatImageView: UIImageView!
     
     // MARK: - View Controller Life Cycle
     override func viewDidLoad() {
@@ -25,6 +26,13 @@ class WeatherViewController: UIViewController {
         configureSearchController()
         configureForecastTableView()
         configureAlerts()
+        bindImageView()
+        weatherViewViewModel.loadSavedCities()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        weatherViewViewModel.saveCities()
     }
     
     // MARK: - Helper Methods
@@ -38,7 +46,6 @@ class WeatherViewController: UIViewController {
     private func configureSearchController() {
         
         // Configure view
-        searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search city"
         navigationItem.searchController = searchController
@@ -51,9 +58,23 @@ class WeatherViewController: UIViewController {
             .sink { city in
                 if !city.isEmpty {
                     self.weatherViewViewModel.fetchWeatherForecast(for: city)
+                    self.weatherViewViewModel.fetchRandomImage()
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    private func bindImageView() {
+        weatherViewViewModel.$randomImage
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.image, on: randomCatImageView)
+            .store(in: &subscriptions)
+        
+        
+        // Make It Rounded
+        randomCatImageView.clipsToBounds = true
+        randomCatImageView.layer.cornerCurve = .continuous
+        randomCatImageView.layer.cornerRadius = randomCatImageView.bounds.height / 2.0
     }
     
     private func configureAlerts() {
@@ -96,7 +117,7 @@ extension WeatherViewController: UITableViewDataSource {
         
         let cellViewModel = weatherViewViewModel.getViewModelForTableViewCell(at: indexPath.section)
         cell.configure(withViewModel: cellViewModel)
-        
+
         return cell
     }
     
@@ -114,13 +135,5 @@ extension WeatherViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-}
-
-// MARK: - UISearchResultsUpdating
-extension WeatherViewController: UISearchResultsUpdating {
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        // TODO
     }
 }

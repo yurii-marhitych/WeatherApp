@@ -27,6 +27,7 @@ class RandomImageManager {
                 URLSession.shared
                     .dataTaskPublisher(for: url)
                     .map(\.data)
+                    .print()
                     .decode(type: RandomImage.self, decoder: JSONDecoder())
                     .sink { completion in
                         if case .failure = completion {

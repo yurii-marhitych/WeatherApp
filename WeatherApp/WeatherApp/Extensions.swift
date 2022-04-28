@@ -5,11 +5,13 @@
 //  Created by Yurii Marhitych on 28.04.2022.
 //
 
-import Foundation
+import UIKit
+import Combine
 
 // MARK: - Date
 extension Date {
     
+    // MARK: - Initializer
     init?(unixTime: Double) {
         let date = Date(timeIntervalSince1970: unixTime)
         let dateFormatter = DateFormatter()
@@ -23,5 +25,23 @@ extension Date {
             return nil
         }
         self = formattedDate
+    }
+}
+
+// MARK: - UISearchTextField
+extension UISearchTextField {
+    
+    // MARK: - Properties
+    var textPublisher: AnyPublisher<String, Never> {
+        NotificationCenter.default
+            .publisher(
+                for: UISearchTextField.textDidEndEditingNotification,
+                   object: self)
+            .map(\.object)
+            .map { $0 as! UISearchTextField }
+            .map(\.text)
+            .replaceNil(with: "")
+            .map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
+            .eraseToAnyPublisher()
     }
 }
